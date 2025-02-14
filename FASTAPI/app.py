@@ -77,5 +77,24 @@ def guardarUsuario(usuarionuevo: dict):
     for usr in usuarios:
         if usr['id'] == usuarionuevo.get('id'):
             raise HTTPException(status_code=400, detail='El usuario ya esta registrado')
+        
     usuarios.append(usuarionuevo)
     return {'mensaje':'Usuario registrado'}
+
+# end point para actualizar un usuario tipo put
+@app.put('/usuario/{id}', tags=['Operaciones CRUD'])
+def actualizarUsuario(id: int, usuarioActualizado: dict):
+    for usuario in usuarios:
+        if usuario['id'] == id:
+            usuario.update(usuarioActualizado)
+            return {'mensaje':'Usuario actualizado'}
+    raise HTTPException(status_code=400, detail='Usuario no encontrado')
+
+# end point para borra un usuario tipo delete
+@app.delete('/usuario/{id}', tags=['Operaciones CRUD'])
+def borrarUsuario(id: int):
+    for usuario in usuarios:
+        if usuario['id'] == id:
+            usuarios.remove(usuario)
+            return {'mensaje':'Usuario eliminado'}
+    raise HTTPException(status_code=400, detail='Usuario no encontrado')
