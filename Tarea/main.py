@@ -40,3 +40,11 @@ def guardar_tarea(tarea: dict):
         
     tareas.append(tarea)
     return {'Tarea Guardada': tarea}
+
+# endPoint para obtener una tarea por id
+@app.get('/tareas/{id}', tags=['Operaciones de las Tareas'])
+def consultar_tarea(id: int):
+    for tarea in tareas:
+        if tarea['id'] == id:
+            return {'Tarea Encontrada': tarea}
+    raise HTTPException(status_code=400, detail=f'No se encontro la tarea con el id: {id}')
