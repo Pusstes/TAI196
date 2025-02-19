@@ -13,10 +13,20 @@ tareas = [
     {'id': 3, 'nombre': 'Dormir', 'descripcion': 'Dormir 8 horas', 'vencimiento': '2025-02-20', 'estado': 'pendiente'},
     {'id': 4, 'nombre': 'Correr', 'descripcion': 'Correr 5 km', 'vencimiento': '2025-02-20', 'estado': 'pendiente'},
     {'id': 5, 'nombre': 'Acabar lo de Isay', 'descripcion': 'Terminar la  practica 4', 'vencimiento': '2025-02-19', 'estado': 'Completada'},
-    {'id': 6, 'nombre': 'Leer berserk', 'descripcion': 'Leer el capitulo   140', 'vencimiento': '2025-02-20', 'estado': 'Completada'}
+    {'id': 6, 'nombre': 'Leer berserk', 'descripcion': 'Leer el capitulo   140', 'vencimiento': '2025-02-20', 'estado': 'Completada'},
+    {'id': 7, 'nombre': 'Tarea  de prueba  a borrar', 'descripcion': 'se borrara', 'vencimiento': '2025-02-20', 'estado': 'pendiente'}
 ]
 
 # endPoint para mostrar la lista de tareas
 @app.get('/tareas/', tags=['Operaciones de las Tareas'])
 def consultar_tareas():
     return {'Tareas Registradas': tareas}
+
+# endPoint para borrar una tarea por id
+@app.delete('/tareas/{id}', tags=['Operaciones de las Tareas'])
+def borrar_tarea(id: int):
+    for tarea in tareas:
+        if tarea['id'] == id:
+            tareas.remove(tarea)
+            return {'Tarea Eliminada': tarea}
+    raise HTTPException(status_code=400, detail=f'No se encontro la tarea con el id: {id}')
