@@ -37,7 +37,7 @@ def guardar_tarea(tarea: dict):
     for t in tareas:
         if t['id'] == tarea['id']:
             raise HTTPException(status_code=400, detail=f'Ya existe una tarea con el id: {tarea["id"]}')
-        
+
     tareas.append(tarea)
     return {'Tarea Guardada': tarea}
 
@@ -47,4 +47,14 @@ def consultar_tarea(id: int):
     for tarea in tareas:
         if tarea['id'] == id:
             return {'Tarea Encontrada': tarea}
+    raise HTTPException(status_code=400, detail=f'No se encontro la tarea con el id: {id}')
+
+# end point para actualizar una tarea
+@app.put('/tareas/{id}', tags=['Operaciones de las Tareas'])
+def actualizar_tarea(id: int, tarea: dict):
+    for t in tareas:
+        if t['id'] == id:
+            tareas.remove(t)
+            tareas.append(tarea)
+            return {'Tarea Actualizada': tarea}
     raise HTTPException(status_code=400, detail=f'No se encontro la tarea con el id: {id}')
