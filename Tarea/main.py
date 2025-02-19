@@ -14,7 +14,7 @@ tareas = [
     {'id': 4, 'nombre': 'Correr', 'descripcion': 'Correr 5 km', 'vencimiento': '2025-02-20', 'estado': 'pendiente'},
     {'id': 5, 'nombre': 'Acabar lo de Isay', 'descripcion': 'Terminar la  practica 4', 'vencimiento': '2025-02-19', 'estado': 'Completada'},
     {'id': 6, 'nombre': 'Leer berserk', 'descripcion': 'Leer el capitulo   140', 'vencimiento': '2025-02-20', 'estado': 'Completada'},
-    {'id': 7, 'nombre': 'Tarea  de prueba  a borrar', 'descripcion': 'se borrara', 'vencimiento': '2025-02-20', 'estado': 'pendiente'}
+    {'id': 7, 'nombre': 'Tarea  de prueba  a borrar', 'descripcion': 'se borrara', 'vencimiento': '2025-02-20', 'estado': 'pendiente'},
 ]
 
 # endPoint para mostrar la lista de tareas
@@ -30,3 +30,13 @@ def borrar_tarea(id: int):
             tareas.remove(tarea)
             return {'Tarea Eliminada': tarea}
     raise HTTPException(status_code=400, detail=f'No se encontro la tarea con el id: {id}')
+
+# end point  para guardar una tarea nueva
+@app.post('/tareas/', tags=['Operaciones de las Tareas'])
+def guardar_tarea(tarea: dict):
+    for t in tareas:
+        if t['id'] == tarea['id']:
+            raise HTTPException(status_code=400, detail=f'Ya existe una tarea con el id: {tarea["id"]}')
+        
+    tareas.append(tarea)
+    return {'Tarea Guardada': tarea}
