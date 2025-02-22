@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException
-
+from pydantic import BaseModel
 from typing import Optional
+from typing import List, Optional
 
 #declaramos un objeto 
 app = FastAPI(
@@ -10,13 +11,20 @@ app = FastAPI(
 )
 
 usuarios= [
-    {'id':1, 'nombre':'Gerardo', 'edad': 20},
-    {'id':2, 'nombre':'Alberto', 'edad': 20},
-    {'id':3, 'nombre':'Ramirez', 'edad': 20},
-    {'id':4, 'nombre':'Gerardo Alberto', 'edad': 23},
-    {'id':5, 'nombre':'America', 'edad': 24},
-    {'id':6, 'nombre':'Chivas', 'edad': 25}
+    {'id':1, 'nombre':'Gerardo', 'edad': 20, 'correo':'gerardo@gmail.com'},
+    {'id':2, 'nombre':'Alberto', 'edad': 20, 'correo':'gerardo@gmail.com'},
+    {'id':3, 'nombre':'Ramirez', 'edad': 20, 'correo':'gerardo@gmail.com'},
+    {'id':4, 'nombre':'Gerardo Alberto', 'edad': 23, 'correo':'gerardo@gmail.com'},
+    {'id':5, 'nombre':'America', 'edad': 24, 'correo':'gerardo@gmail.com'},
+    {'id':6, 'nombre':'Chivas', 'edad': 25, 'correo':'gerardo@gmail.com'},
 ]
+
+#creamos una clase para el modelo de usuario
+class modelUsuario(BaseModel):
+    id: int
+    nombre: str
+    edad: int
+    correo:str
         
 # #generamos nuestro primer endpoint 
 # # endpoint tipo get 
@@ -67,27 +75,34 @@ usuarios= [
 #         return {"mensaje": "No se encontraron usuarios que coincidan con los parámetros proporcionados."+str(usuario_id)+str(nombre)+str(edad)}
 
 # end poin consultar todos los usuarios
-@app.get('/usuarios/', tags=['Operaciones CRUD'])
+@app.get('/usuarios/', response_model= List[modelUsuario] ,tags=['Operaciones CRUD'])
 def ConsultarTodos():
-    return {'Usuarios Registrados':usuarios}
+    return usuarios
 
 # end point para guardar un usuario tipo post
-@app.post('/usuario/', tags=['Operaciones CRUD'])
-def guardarUsuario(usuarionuevo: dict):
+#los campos se recibiran en el modelo de usuario
+#en la funcion se recibe un parametro de tipo modelUsuario
+#se valida si el usuario ya existe en la base de datos
+@app.post('/usuario/',response_model= modelUsuario ,tags=['Operaciones CRUD'])
+def guardarUsuario(usuarionuevo: modelUsuario):
     for usr in usuarios:
-        if usr['id'] == usuarionuevo.get('id'):
+        if usr['id'] == usuarionuevo.id:
             raise HTTPException(status_code=400, detail='El usuario ya esta registrado')
         
     usuarios.append(usuarionuevo)
     return {'mensaje':'Usuario registrado'}
 
 # end point para actualizar un usuario tipo put
-@app.put('/usuario/{id}', tags=['Operaciones CRUD'])
-def actualizarUsuario(id: int, usuarioActualizado: dict):
-    for usuario in usuarios:
-        if usuario['id'] == id:
-            usuario.update(usuarioActualizado)
-            return {'mensaje':'Usuario actualizado'}
+# se recibe un parametro de tipo modelUsuario
+# se valida si el usuario existe en la base de datos
+# se recorre la lista de usuarios y se actualiza el usuario
+# se retorna el usuario actualizado
+@app.put('/usuario/{id}',response_model=modelUsuario ,tags=['Operaciones CRUD'])
+def actualizarUsuario(id: int, usuarioActualizado: modelUsuario):
+    for index, usr in enumerate(usuarios):
+        if usr['id'] == id:
+            usuarios[index] = usuarioActualizado.model_dump()
+            return usuarios[index]
     raise HTTPException(status_code=400, detail='Usuario no encontrado')
 
 # end point para borra un usuario tipo delete

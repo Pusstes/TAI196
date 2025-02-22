@@ -36,4 +36,3 @@ def consultarusuario(id:int):
     #hacemos consulta retornamos resultset 
     return{'Se encontro el usuario': id}
 
-#endpoint opcional
