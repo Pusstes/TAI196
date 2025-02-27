@@ -1,6 +1,6 @@
 from fastapi import FastAPI 
 # importamos la libreria para permitir datos opcionales
-from typing import Optional
+
 
 # declaracion del objeto y la instaciamos de la clase FastAPI
 app = FastAPI(

@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
 from typing import Optional
 from typing import List, Optional
+from modelsPydantic import modelUsuario
 
 #declaramos un objeto 
 app = FastAPI(
@@ -19,12 +19,7 @@ usuarios= [
     {'id':6, 'nombre':'Chivas', 'edad': 25, 'correo':'gerardo@gmail.com'},
 ]
 
-#creamos una clase para el modelo de usuario
-class modelUsuario(BaseModel):
-    id: int
-    nombre: str
-    edad: int
-    correo:str
+
         
 # #generamos nuestro primer endpoint 
 # # endpoint tipo get 
