@@ -1,8 +1,8 @@
 from fastapi import FastAPI, HTTPException
-from typing import Optional
+from fastapi.responses import JSONResponse
 from typing import List, Optional
-from modelsPydantic import modelUsuario
-
+from modelsPydantic import modelUsuario, modelAuth
+from tokenGen import createToken
 #declaramos un objeto 
 app = FastAPI(
     title='Mi primer API 196', 
@@ -19,7 +19,19 @@ usuarios= [
     {'id':6, 'nombre':'Chivas', 'edad': 25, 'correo':'gerardo@gmail.com'},
 ]
 
+@app.post('/auth/', tags=['Autenticacion'])
+def login(autorizado:modelAuth):
+    if autorizado.correo == 'gerardo@example.com' and autorizado.password == '123456789':
+        token = createToken(autorizado.model_dump())
+        print(token)
+        return {'aviso': 'Token generado'}
+    else:
+        return {'Aviso':'Usuario no autorizado'}
+    
 
+    
+    
+  
         
 # #generamos nuestro primer endpoint 
 # # endpoint tipo get 
@@ -108,3 +120,4 @@ def borrarUsuario(id: int):
             usuarios.remove(usuario)
             return {'mensaje':'Usuario eliminado'}
     raise HTTPException(status_code=400, detail='Usuario no encontrado')
+
