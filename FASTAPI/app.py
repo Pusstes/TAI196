@@ -4,12 +4,19 @@ from typing import List, Optional
 from modelsPydantic import modelUsuario, modelAuth
 from tokenGen import createToken
 from middleweres import BearerJWT
+from DB.conexion import Session, engine, Base
+from models.modelsDB import User
+
 #declaramos un objeto 
 app = FastAPI(
     title='Mi primer API 196', 
     description='Gerardo Alberto ramirez',
     version='1.0.1'
 )
+
+#creamos la base de datos
+Base.metadata.create_all(bind=engine)
+
 
 usuarios= [
     {'id':1, 'nombre':'Gerardo', 'edad': 20, 'correo':'gerardo@gmail.com'},
@@ -88,17 +95,18 @@ def ConsultarTodos():
     return usuarios
 
 # end point para guardar un usuario tipo post
-#los campos se recibiran en el modelo de usuario
-#en la funcion se recibe un parametro de tipo modelUsuario
-#se valida si el usuario ya existe en la base de datos
-@app.post('/usuario/',response_model= modelUsuario ,tags=['Operaciones CRUD'])
-def guardarUsuario(usuarionuevo: modelUsuario):
-    for usr in usuarios:
-        if usr['id'] == usuarionuevo.id:
-            raise HTTPException(status_code=400, detail='El usuario ya esta registrado')
-        
-    usuarios.append(usuarionuevo)
-    return {'mensaje':'Usuario registrado'}
+@app.post('/usuario/',response_model= modelUsuario ,tags=['Operaciones CRUD']) #se agrega el modelo de respuesta
+def guardarUsuario(usuarionuevo: modelUsuario): #se agrega el modelo de entrada
+    db = Session() #se crea la sesion
+    try: #se intenta guardar el usuario
+        db.add(User(**usuarionuevo.model_dump())) #se agrega el usuario a la base de datos
+        db.commit() #se guarda el usuario
+        return JSONResponse(status_code=201, content={'mensaje':'Usuario guardado', 'usuario':usuarionuevo.model_dump()}) #se retorna el usuario guardado
+    except Exception as e: #en caso de error se retorna un mensaje de error
+        db.rollback() #se deshace la transaccion
+        return JSONResponse(status_code=500, content={'mensaje':'Error al guardar el usuario', 'error':str(e)})
+    finally:
+        db.close()
 
 # end point para actualizar un usuario tipo put
 # se recibe un parametro de tipo modelUsuario
