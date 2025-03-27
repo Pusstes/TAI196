@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException,Depends
 from fastapi.responses import JSONResponse
 from typing import List, Optional
+from fastapi.encoders import jsonable_encoder
 from modelsPydantic import modelUsuario, modelAuth
 from tokenGen import createToken
 from middleweres import BearerJWT
@@ -113,7 +114,7 @@ def guardarUsuario(usuarionuevo: modelUsuario): #se agrega el modelo de entrada
 # se valida si el usuario existe en la base de datos
 # se recorre la lista de usuarios y se actualiza el usuario
 # se retorna el usuario actualizado
-@app.put('/usuario/{id}',response_model=modelUsuario ,tags=['Operaciones CRUD'])
+""" @app.put('/usuario/{id}',response_model=modelUsuario ,tags=['Operaciones CRUD'])
 def actualizarUsuario(id: int, usuarioActualizado: modelUsuario):
     for index, usr in enumerate(usuarios):
         if usr['id'] == id:
@@ -121,12 +122,39 @@ def actualizarUsuario(id: int, usuarioActualizado: modelUsuario):
             return usuarios[index]
     raise HTTPException(status_code=400, detail='Usuario no encontrado')
 
-# end point para borra un usuario tipo delete
+
 @app.delete('/usuario/{id}', tags=['Operaciones CRUD'])
 def borrarUsuario(id: int):
     for usuario in usuarios:
         if usuario['id'] == id:
             usuarios.remove(usuario)
             return {'mensaje':'Usuario eliminado'}
-    raise HTTPException(status_code=400, detail='Usuario no encontrado')
+    raise HTTPException(status_code=400, detail='Usuario no encontrado') """
 
+@app.get('/TAI196/FASTAPI/DB/usuarios.sqlite', tags=['OPERACIONES CRUD'])
+def ConsultarTodos():
+    db = Session()
+    try:
+        consulta = db.query(User).all()
+        return JSONResponse(content=jsonable_encoder(consulta))
+    
+    except Exception as x:
+        return JSONResponse(status_code=500, content={'mensaje':'No fue posible hacer la consulta', 'error':str(x)})
+    
+    finally:
+        db.close()
+        
+@app.get('/usuario/{id}', tags=['Parametro obligatorio'])
+def consultaUsuario(id: int):
+    db = Session()
+    try:
+        consulta = db.query(User).filter(User.id == id).first()
+        if not consulta:
+            return JSONResponse(status_code=404, content={'mensaje':'Usuario no encontrado'})
+        return JSONResponse(content=jsonable_encoder(consulta))
+    
+    except Exception as x:
+        return JSONResponse(status_code=500, content={'mensaje':'No fue posible hacer la consulta', 'error':str(x)})
+    
+    finally:
+        db.close()
