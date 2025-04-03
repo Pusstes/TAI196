@@ -10,7 +10,7 @@ from fastapi import APIRouter
 routerUsuario = APIRouter()
 # dependencies = [Depends(BearerJWT())]
 
-@routerUsuario.get('/TAI196/FASTAPI/DB/usuarios.sqlite', tags=['OPERACIONES CRUD'])
+@routerUsuario.get('/usuarios', tags=['OPERACIONES CRUD'])
 def ConsultarTodos():
     db = Session()
     try:
@@ -23,7 +23,7 @@ def ConsultarTodos():
     finally:
         db.close()
         
-@routerUsuario.get('/usuario/{id}', tags=['OPERACIONES CRUD'])
+@routerUsuario.get('/usuarios/{id}', tags=['OPERACIONES CRUD'])
 def consultaUsuario_por_id(id: int):
     db = Session()
     try:
@@ -39,7 +39,7 @@ def consultaUsuario_por_id(id: int):
         db.close()
    
 #end point para eliminar un usuario tipo delete     
-@routerUsuario.delete('/usuario/{id}', tags=['OPERACIONES CRUD'])
+@routerUsuario.delete('/usuarios/{id}', tags=['OPERACIONES CRUD'])
 def borrarUsuario(id: int): #se recibe el id del usuario a eliminar se pone que es de tipo int
     db = Session() #se crea la sesion de la base de datos
     try: #se intenta hacer la consulta
@@ -58,7 +58,7 @@ def borrarUsuario(id: int): #se recibe el id del usuario a eliminar se pone que 
         db.close() #se cierra la conexion con la base de datos
         
 #end point para actualizar un usuario tipo put con su id
-@routerUsuario.put('/usuario/{id}', tags=['OPERACIONES CRUD'])
+@routerUsuario.put('/usuarios/{id}', tags=['OPERACIONES CRUD'])
 def actualizarUsuario(id: int, usuarioActualizado: modelUsuario): #se recibe el id del usuario a actualizar y el modelo de usuario actualizado
     db = Session() #se crea la sesion de la base de datos
     try: #se intenta hacer la consulta
@@ -78,7 +78,7 @@ def actualizarUsuario(id: int, usuarioActualizado: modelUsuario): #se recibe el 
         db.close()
         
 # end point para guardar un usuario tipo post
-@routerUsuario.post('/usuario/',response_model= modelUsuario ,tags=['OPERACIONES CRUD']) #se agrega el modelo de respuesta
+@routerUsuario.post('/usuarios/',response_model= modelUsuario ,tags=['OPERACIONES CRUD']) #se agrega el modelo de respuesta
 def guardarUsuario(usuarionuevo: modelUsuario): #se agrega el modelo de entrada
     db = Session() #se crea la sesion
     try: #se intenta guardar el usuario
